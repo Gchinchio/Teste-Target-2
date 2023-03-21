@@ -1,0 +1,56 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+
+public class FaturamentoMensal {
+    public static void main(String[] args) throws IOException {
+        // Lendo o arquivo json com o faturamento diário
+        ObjectMapper objectMapper = new ObjectMapper();
+        URL url = new URL("https://exemplo.com/faturamento.json");
+        JsonNode jsonNode = objectMapper.readTree(url);
+
+        // Criando um ArrayList com os valores de faturamento diário
+        ArrayList<Double> faturamentoDiario = new ArrayList<>();
+        for (JsonNode node : jsonNode.get("faturamentoDiario")) {
+            faturamentoDiario.add(node.asDouble());
+        }
+
+        // Calculando o menor e o maior valor de faturamento diário
+        double menorFaturamento = faturamentoDiario.get(0);
+        double maiorFaturamento = faturamentoDiario.get(0);
+        for (double valor : faturamentoDiario) {
+            if (valor < menorFaturamento) {
+                menorFaturamento = valor;
+            }
+            if (valor > maiorFaturamento) {
+                maiorFaturamento = valor;
+            }
+        }
+
+        // Calculando a média mensal de faturamento diário
+        double somaFaturamento = 0.0;
+        int numeroDias = 0;
+        for (double valor : faturamentoDiario) {
+            if (valor > 0.0) {
+                somaFaturamento += valor;
+                numeroDias++;
+            }
+        }
+        double mediaMensal = somaFaturamento / numeroDias;
+
+        // Contando o número de dias com faturamento diário acima da média mensal
+        int diasAcimaDaMedia = 0;
+        for (double valor : faturamentoDiario) {
+            if (valor > mediaMensal) {
+                diasAcimaDaMedia++;
+            }
+        }
+
+        // Imprimindo os resultados
+        System.out.println("Menor valor de faturamento diário: " + menorFaturamento);
+        System.out.println("Maior valor de faturamento diário: " + maiorFaturamento);
+        System.out.println("Número de dias com faturamento diário acima da média mensal: " + diasAcimaDaMedia);
+    }
+}
